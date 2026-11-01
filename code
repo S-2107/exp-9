@@ -1,0 +1,179 @@
+import java.util.Scanner;
+// Class representing the NavigaƟon Graph using purely arrays
+class NavigationGraphArray {
+private int vertices;
+private int[][] adjMatrix;
+private String[] cityNames;
+public NavigationGraphArray(int vertices) {
+this.vertices = vertices;
+this.adjMatrix = new int[vertices][vertices];
+this.cityNames = new String[vertices];
+}
+// Set names for the cities
+public void setCityName(int index, String name) {
+if (index >= 0 && index < vertices) {
+cityNames[index] = name;
+}
+}
+// Add a directed road (edge) from source to destination
+public void addDirectedRoad(int src, int dest) {
+if (src >= 0 && src < vertices && dest >= 0 && dest < vertices) {
+adjMatrix[src][dest] = 1;
+System.out.println("One-way road added successfully from " + cityNames[src] +
+" to " +
+cityNames[dest]);
+} else {
+System.out.println("Error: Invalid city indices!");
+}
+}
+// Display the Adjacency Matrix
+public void displayMatrix() { System.out.println("\n--- Adjacency Matrix
+(Directed Roads) ---");
+System.out.print(" ");
+for (int i = 0; i < vertices; i++) {
+System.out.print(cityNames[i] + "\t");
+}
+System.out.println();
+for (int i = 0; i < vertices; i++) {
+System.out.print(cityNames[i] + "\t");
+for (int j = 0; j < vertices; j++) {
+System.out.print(adjMatrix[i][j] + "\t");
+}
+System.out.println();
+}
+}
+// 1. Breadth First Search (BFS) using an explicit Array Queue
+public void bfs(int startVertex) {
+if (startVertex < 0 || startVertex >= vertices) {
+System.out.println("Invalid starting city index.");
+return;
+}
+boolean[] visited = new boolean[vertices];
+int[] queue = new int[vertices];
+int front = 0, rear = 0;
+// Mark start node as visited and enqueue it
+visited[startVertex] = true;
+queue[rear++] = startVertex;
+System.out.println("\n--- BFS Traversal (Array-based Queue) ---");
+System.out.print("Reachable cities from " + cityNames[startVertex] + ": ");
+while (front < rear) {
+int currentVertex = queue[front++];
+System.out.print(cityNames[currentVertex] + " "); // Explore all adjacent
+unvisited cities
+for (int i = 0; i < vertices; i++) {
+if (adjMatrix[currentVertex][i] == 1 && !visited[i]) {
+visited[i] = true;
+queue[rear++] = i;
+}
+}
+}
+System.out.println();
+}
+// 2. Depth First Search (DFS) using an explicit Array Stack
+public void dfs(int startVertex) {
+if (startVertex < 0 || startVertex >= vertices) {
+System.out.println("Invalid starting city index.");
+return;
+}
+boolean[] visited = new boolean[vertices];
+int[] stack = new int[vertices];
+int top = -1;
+// Push starting vertex onto the stack
+stack[++top] = startVertex;
+System.out.println("\n--- DFS Traversal (Array-based Stack) ---");
+System.out.print("Reachable cities from " + cityNames[startVertex] + ": ");
+while (top >= 0) {
+int currentVertex = stack[top--];
+if (!visited[currentVertex]) {
+
+visited[currentVertex] = true;
+System.out.print(cityNames[currentVertex] + " ");
+// Push adjacent vertices in reverse order to visit left-to-right correctly
+for (int i = vertices - 1; i >= 0; i--) {
+if (adjMatrix[currentVertex][i] == 1 && !visited[i]) { stack[++top] = i;
+}
+}
+}
+}
+System.out.println();
+}
+public void displayCities() {
+System.out.println("\n--- City List & Indices ---");
+for (int i = 0; i < vertices; i++) {
+System.out.println(i + ". " + cityNames[i]);
+}
+}
+}
+// Main interactive menu-driven class
+public class NavigationArrayApp {
+public static void main(String[] args) {
+Scanner scanner = new Scanner(System.in);
+System.out.println("==================================================");
+System.out.println(" CITY NAVIGATION SYSTEM (ARRAY IMPLEMENTATION) ");
+System.out.println("==================================================");
+System.out.print("Enter the total number of cities: ");
+while (!scanner.hasNextInt()) {
+System.out.print("Invalid input. Enter a valid number: ");
+scanner.next();
+}
+int v = scanner.nextInt();
+NavigationGraphArray graph = new NavigationGraphArray(v);
+scanner.nextLine(); // consume newline
+for (int i = 0; i < v; i++) {
+System.out.print("Enter name for city " + i + ": "); String cityName =
+scanner.nextLine();
+graph.setCityName(i, cityName);
+}
+int choice;
+do {
+System.out.println("\n========================================");
+System.out.println(" NAVIGATION MENU ");
+System.out.println("========================================");
+System.out.println("1. View City List & Indices");
+System.out.println("2. Add One-Way Road (Directed Edge)");
+System.out.println("3. Display Adjacency Matrix");
+System.out.println("4. Perform Breadth First Search (BFS)");
+System.out.println("5. Perform Depth First Search (DFS)");
+System.out.println("6. Exit");
+System.out.print("Enter your choice (1-6): ");
+while (!scanner.hasNextInt()) {
+System.out.print("Invalid choice. Enter a number between 1 and 6: ");
+scanner.next();
+}
+choice = scanner.nextInt();
+switch (choice) {
+case 1:
+graph.displayCities();
+break;
+case 2:
+graph.displayCities();
+System.out.print("Enter source city index: ");
+int src = scanner.nextInt();
+System.out.print("Enter destination city index: ");
+int dest = scanner.nextInt();
+graph.addDirectedRoad(src, dest); break;
+case 3:
+graph.displayMatrix();
+break;
+case 4:
+graph.displayCities();
+System.out.print("Enter starting city index for BFS: ");
+int bfsStart = scanner.nextInt();
+graph.bfs(bfsStart);
+break;
+case 5:
+graph.displayCities();
+System.out.print("Enter starting city index for DFS: ");
+int dfsStart = scanner.nextInt();
+graph.dfs(dfsStart);
+break;
+case 6:
+System.out.println("Exiting Navigation System. Drive safely!");
+break;
+default:
+System.out.println("Invalid option! Please pick between 1 and 6.");
+}
+} while (choice != 6);
+scanner.close();
+}
+}
